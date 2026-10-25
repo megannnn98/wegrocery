@@ -2,29 +2,10 @@
 
 import { X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import { t } from "@/lib/i18n";
 import { canonicalizeCategory, normalizeCategory } from "@/lib/utils";
 import { Input } from "./input";
-
-/**
- * Built-in suggestions, ordered by typical GAS-shopping prevalence.
- * Admins can still add their own — see `extra` and the inline "+ aggiungi" row.
- */
-const DEFAULT_CATEGORIES = [
-  "Frutta",
-  "Verdura",
-  "Pane e cereali",
-  "Pasta e riso",
-  "Latticini",
-  "Uova",
-  "Carne",
-  "Pesce",
-  "Conserve",
-  "Olio e aceto",
-  "Bevande",
-  "Dolci",
-  "Altro",
-] as const;
 
 type Props = {
   /** Form field name — used by FormData on the parent form. */

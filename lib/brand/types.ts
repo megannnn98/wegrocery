@@ -15,7 +15,7 @@ export type BrandTheme = {
 };
 
 /** The languages the app ships in. Picked once per deploy (brand.locale). */
-export const LOCALES = ["it", "en", "es", "fr"] as const;
+export const LOCALES = ["it", "en", "es", "fr", "ru"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export type BrandConfig = {

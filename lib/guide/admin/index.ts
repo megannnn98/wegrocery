@@ -6,12 +6,14 @@ import { adminGuideEn } from "./en";
 import { adminGuideEs } from "./es";
 import { adminGuideFr } from "./fr";
 import { adminGuideIt } from "./it";
+import { adminGuideRu } from "./ru";
 
 const ADMIN_GUIDES: Record<Locale, GuideContent> = {
   it: adminGuideIt,
   en: adminGuideEn,
   es: adminGuideEs,
   fr: adminGuideFr,
+  ru: adminGuideRu,
 };
 
 // The admin guide (/guida/admin) in the deploy's language, handed out only
