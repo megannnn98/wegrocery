@@ -22,6 +22,7 @@ import Link from "next/link";
 import { adminHref } from "@/lib/admin/nav";
 import { CycleReviewCloseButton } from "./cycle-review-modal";
 import { ImportListingWizard } from "./import-listing-wizard";
+import { DateTimeField } from "@/components/ui/datetime-field";
 import { Input } from "@/components/ui/input";
 import { labelClass } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -595,12 +596,7 @@ export function EditCycleForm({
           <label className="block">
             <span className={labelClass}>{t.admin.cycle.orderCloseAtLabel}
             </span>
-            <Input
-              name="orderCloseAt"
-              type="datetime-local"
-              required
-              defaultValue={closeAtLocal}
-            />
+            <DateTimeField name="orderCloseAt" required defaultValue={closeAtLocal} />
           </label>
         </div>
       )}
@@ -846,11 +842,7 @@ export function CreateCycleForm({
           <label className="block">
             <span className={labelClass}>{t.admin.cycle.orderCloseAtLabel}
             </span>
-            <Input
-              name="orderCloseAt"
-              type="datetime-local"
-              required
-            />
+            <DateTimeField name="orderCloseAt" required />
           </label>
         </div>
 
