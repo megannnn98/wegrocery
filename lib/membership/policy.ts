@@ -36,13 +36,18 @@ export function existingMemberSignIn(
  * No member row for the login email: self-onboarding when the check is on.
  * `emailVerified` is Google's `email_verified` claim: an account whose address
  * Google has not verified must never be auto-provisioned under it.
+ * `openSignup` (OPEN_SIGNUP=true): any verified address becomes a member, no
+ * card check.
  */
 export function newUserSignIn(
   checkEnabled: boolean,
   result: MembershipResult | null,
   emailVerified = true,
+  openSignup = false,
 ): SignInDecision {
-  if (!checkEnabled || !emailVerified) return { kind: "deny", error: "AccessDenied" };
+  if (!emailVerified) return { kind: "deny", error: "AccessDenied" };
+  if (openSignup) return { kind: "provision" };
+  if (!checkEnabled) return { kind: "deny", error: "AccessDenied" };
   if (!result) return { kind: "check" };
   if (result.status === "valid") return { kind: "provision" };
   if (result.status === "invalid") return { kind: "deny", error: "NotMember" };
