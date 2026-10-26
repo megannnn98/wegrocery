@@ -1,12 +1,16 @@
+import { brand } from "@/lib/brand";
+
 // Online top-up rules and Stripe key policy. Pure (no env reads, no I/O) so
 // they are unit tested; lib/payments/stripe.ts applies them to process.env.
 
 // Range and one-tap amounts of a single top-up. The lower bound is Stripe's
 // minimum charge for EUR (docs.stripe.com/currencies): below it Stripe refuses
 // the payment. Small top-ups cost the group proportionally more in fees.
-export const TOPUP_MIN_CENTS = 50;
-export const TOPUP_MAX_CENTS = 30000;
-export const TOPUP_PRESETS_CENTS = [2500, 5000, 10000] as const;
+// Tenge: from 100 ₸ to 500 000 ₸ (amounts in minor units, like the euro cents).
+const IS_KZT = brand.currency === "KZT";
+export const TOPUP_MIN_CENTS = IS_KZT ? 10000 : 50;
+export const TOPUP_MAX_CENTS = IS_KZT ? 50000000 : 30000;
+export const TOPUP_PRESETS_CENTS: readonly number[] = IS_KZT ? [500000, 1000000, 5000000] : [2500, 5000, 10000];
 
 export type TopupAmountError = "invalid" | "tooLow" | "tooHigh";
 

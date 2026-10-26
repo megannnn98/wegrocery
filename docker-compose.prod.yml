@@ -1,0 +1,54 @@
+# Production stack: the app, Postgres and the Neon HTTP proxy the app's driver
+# talks to. Secrets come from ./.env (see deploy/deploy.sh); the web port is
+# bound to localhost for nginx.
+name: wegrocery-prod
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: main
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d main"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    restart: unless-stopped
+    environment:
+      PG_CONNECTION_STRING: postgres://postgres:${DB_PASSWORD}@db:5432/main
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migrate:
+    image: wegrocery:latest
+    profiles: ["tools"]
+    env_file: .env
+    environment:
+      NEON_PROXY_URL: http://neon-proxy:4444/sql
+    command: ["node", "--import", "./deploy/neon-proxy-preload.mjs", "scripts/db-migrate.mjs"]
+    depends_on:
+      - neon-proxy
+
+  web:
+    image: wegrocery:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NEON_PROXY_URL: http://neon-proxy:4444/sql
+      NODE_OPTIONS: --require /app/deploy/neon-proxy-preload.cjs
+    ports:
+      - "127.0.0.1:8003:3000"
+    depends_on:
+      - neon-proxy
+
+volumes:
+  pgdata:

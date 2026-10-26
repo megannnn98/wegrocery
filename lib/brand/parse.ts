@@ -40,7 +40,7 @@ export function parseBrandConfig(raw: string | undefined): BrandConfig {
     }
   }
   if (o.locale !== undefined && !(LOCALES as readonly unknown[]).includes(o.locale)) {
-    throw new Error('brand.locale must be "it", "en", "es" or "fr"');
+    throw new Error('brand.locale must be "it", "en", "es", "fr" or "ru"');
   }
   if (o.archiveCcEmail !== undefined && o.archiveCcEmail !== null && typeof o.archiveCcEmail !== "string") {
     throw new Error("brand.archiveCcEmail must be a string or null");

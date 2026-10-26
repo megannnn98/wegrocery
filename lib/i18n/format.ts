@@ -1,7 +1,7 @@
 import { brand } from "@/lib/brand";
 import type { Locale } from "@/lib/brand/types";
 
-const LOCALE_TAG: Record<Locale, string> = { it: "it-IT", en: "en-GB", es: "es-ES", fr: "fr-FR" };
+const LOCALE_TAG: Record<Locale, string> = { it: "it-IT", en: "en-GB", es: "es-ES", fr: "fr-FR", ru: "ru-RU" };
 const tag = LOCALE_TAG[brand.locale];
 
 const DEFAULT_TIME_ZONE = "Europe/Rome";
@@ -24,9 +24,13 @@ export function resolveTimeZone(value: string | undefined): string {
 // NEXT_PUBLIC_* is inlined at build time, so server and client always agree.
 export const APP_TIME_ZONE = resolveTimeZone(process.env.NEXT_PUBLIC_TIME_ZONE);
 
+// Tenge is shown without kopecks ("1 500 ₸"); a fractional amount still keeps
+// its decimals so nothing is silently rounded.
+const MONEY_DIGITS = brand.currency === "KZT" ? { minimumFractionDigits: 0 } : {};
+
 export function formatMoney(value: number | string): string {
   const n = typeof value === "string" ? parseFloat(value) : value;
-  return new Intl.NumberFormat(tag, { style: "currency", currency: brand.currency }).format(n);
+  return new Intl.NumberFormat(tag, { style: "currency", currency: brand.currency, ...MONEY_DIGITS }).format(n);
 }
 
 // Balances and ledger movements: "+" for a credit, "-" for a debit, no sign
@@ -36,6 +40,7 @@ export function formatSignedMoney(value: number | string): string {
   return new Intl.NumberFormat(tag, {
     style: "currency",
     currency: brand.currency,
+    ...MONEY_DIGITS,
     signDisplay: "exceptZero",
   }).format(n);
 }

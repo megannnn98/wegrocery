@@ -92,16 +92,17 @@ export async function admitEmail(email: string, opts: { emailVerified: boolean }
     return { kind: "bootstrapAdmin" };
   }
   const checkEnabled = isMembershipCheckEnabled();
+  const openSignup = process.env.OPEN_SIGNUP === "true";
 
   let decision = member
     ? existingMemberSignIn(member, checkEnabled, null)
-    : newUserSignIn(checkEnabled, null, opts.emailVerified);
+    : newUserSignIn(checkEnabled, null, opts.emailVerified, openSignup);
   let result: MembershipResult | null = null;
   if (decision.kind === "check") {
     result = member ? await checkMembershipAny([member.email, member.aliasEmail]) : await checkMembership(address);
     decision = member
       ? existingMemberSignIn(member, checkEnabled, result)
-      : newUserSignIn(checkEnabled, result, opts.emailVerified);
+      : newUserSignIn(checkEnabled, result, opts.emailVerified, openSignup);
   }
   if ("logError" in decision && decision.logError && result?.status === "error") {
     console.error(`[auth] membership check unavailable at sign-in: ${result.message}`);

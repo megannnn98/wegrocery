@@ -1,3 +1,4 @@
+import { categoryLabel } from "@/lib/categories";
 import { normalizeCategory } from "@/lib/utils";
 
 // How the members see the products of a cycle (order_cycles.product_order,
@@ -14,10 +15,10 @@ export function normalizeProductOrder(value: string | null | undefined): Product
 // Alphabetical cycles put these categories first (normalized), the others
 // after them in alphabetical order and the products with no category last.
 // A custom order ignores the list.
-const ALPHA_CATEGORY_FIRST = ["frutta", "verdura", "insalate"];
+const ALPHA_CATEGORY_FIRST = ["frutta", "verdura", "insalate", "фрукты", "овощи"];
 
 /** The label of the products with no category, when other categories exist. */
-export const OTHER_CATEGORY = "Altro";
+export const OTHER_CATEGORY = categoryLabel("Altro");
 
 export type ProductGroup<T> = { category: string; products: T[] };
 

@@ -82,6 +82,13 @@ describe("newUserSignIn", () => {
     expect(newUserSignIn(true, null, false)).toEqual({ kind: "deny", error: "AccessDenied" });
     expect(newUserSignIn(true, { status: "valid" }, false)).toEqual({ kind: "deny", error: "AccessDenied" });
   });
+  it("open signup provisions a verified address without any check", () => {
+    expect(newUserSignIn(false, null, true, true)).toEqual({ kind: "provision" });
+    expect(newUserSignIn(true, null, true, true)).toEqual({ kind: "provision" });
+  });
+  it("open signup still refuses an address Google has not verified", () => {
+    expect(newUserSignIn(false, null, false, true)).toEqual({ kind: "deny", error: "AccessDenied" });
+  });
   it("error → MembershipCheckUnavailable (fail closed for strangers)", () => {
     expect(newUserSignIn(true, { status: "error", message: "x" })).toEqual({
       kind: "deny",
