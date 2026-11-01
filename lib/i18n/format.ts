@@ -24,9 +24,13 @@ export function resolveTimeZone(value: string | undefined): string {
 // NEXT_PUBLIC_* is inlined at build time, so server and client always agree.
 export const APP_TIME_ZONE = resolveTimeZone(process.env.NEXT_PUBLIC_TIME_ZONE);
 
-// Tenge is shown without kopecks ("1 500 ₸"); a fractional amount still keeps
+// Tenge is shown as "1 500 ₸": the narrow symbol (the default symbol of the ru
+// locale is the code, "KZT") and no kopecks; a fractional amount still keeps
 // its decimals so nothing is silently rounded.
-const MONEY_DIGITS = brand.currency === "KZT" ? { minimumFractionDigits: 0 } : {};
+const MONEY_DIGITS =
+  brand.currency === "KZT"
+    ? ({ minimumFractionDigits: 0, currencyDisplay: "narrowSymbol" } as const)
+    : {};
 
 export function formatMoney(value: number | string): string {
   const n = typeof value === "string" ? parseFloat(value) : value;
