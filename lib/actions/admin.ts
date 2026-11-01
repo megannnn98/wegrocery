@@ -1,6 +1,5 @@
 "use server";
 
-import { firstNonVegan } from "@/lib/products/vegan";
 import { recordUsage } from "@/lib/usage/events";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -2484,9 +2483,6 @@ export async function adminUpsertCatalogProduct(data: UpsertCatalogProductInput)
     const admin = await requireAdmin();
     const db = getDb();
     const now = new Date();
-
-    const nonVegan = firstNonVegan([data]);
-    if (nonVegan.length > 0) return { error: t.errors.nonVegan(nonVegan.join(", ")) };
 
     if (data.catalogProductId) {
       const [existing] = await db

@@ -18,7 +18,6 @@ import { hasSharedColumn, suggestMapping, type TargetField } from "@/lib/csv/hea
 import { parsePriceCell, resolvePricePerKg } from "@/lib/csv/pack-weight";
 import { upsertCycleProducts } from "@/lib/db/cycle-products";
 import { decodeUploadBase64 } from "@/lib/upload-limit";
-import { firstNonVegan } from "@/lib/products/vegan";
 
 function genId(prefix: string): string {
   return `${prefix}_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
@@ -104,9 +103,6 @@ export async function adminImportProductsCsv(supplierId: string, csvText: string
       });
     }
 
-    const nonVeganCsv = firstNonVegan(results);
-    if (nonVeganCsv.length > 0) return { error: t.errors.nonVegan(nonVeganCsv.join(", ")) };
-
     if (results.length > 0) {
       await db.insert(supplierProducts).values(results);
       
@@ -153,8 +149,6 @@ export async function adminImportProductsXlsx(supplierId: string, base64: string
     const buf = decodeUploadBase64(base64);
     const rows = await parseProductTemplate(buf);
     if (rows.length === 0) return { error: t.errors.csvInvalid };
-    const nonVeganXlsx = firstNonVegan(rows);
-    if (nonVeganXlsx.length > 0) return { error: t.errors.nonVegan(nonVeganXlsx.join(", ")) };
 
     const values = rows.map((r) => ({
       catalogProductId: genId("cp"),
@@ -457,9 +451,6 @@ export async function adminApplySupplierListingImport(
         skipped++;
       }
     }
-
-    const nonVeganRows = firstNonVegan([...inserts, ...updates].map(({ row }) => row));
-    if (nonVeganRows.length > 0) return { error: t.errors.nonVegan(nonVeganRows.join(", ")) };
 
     // 3. write to supplier_products
     if (inserts.length) {
