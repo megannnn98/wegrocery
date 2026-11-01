@@ -1,5 +1,6 @@
 "use server";
 
+import { isAnimalCategory } from "@/lib/products/animal-category";
 import { recordUsage } from "@/lib/usage/events";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -903,6 +904,7 @@ export async function adminUpdateCycleProduct(
   try {
     const admin = await requireAdmin();
     const db = getDb();
+    if (isAnimalCategory(data.category)) return { error: t.errors.animalCategory(data.category!.trim()) };
     const pricePerKg =
       data.pricePerKg != null && !Number.isNaN(data.pricePerKg)
         ? data.pricePerKg.toFixed(2)
@@ -2483,6 +2485,8 @@ export async function adminUpsertCatalogProduct(data: UpsertCatalogProductInput)
     const admin = await requireAdmin();
     const db = getDb();
     const now = new Date();
+
+    if (isAnimalCategory(data.category)) return { error: t.errors.animalCategory(data.category!.trim()) };
 
     if (data.catalogProductId) {
       const [existing] = await db

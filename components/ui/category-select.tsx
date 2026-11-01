@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
+import { isAnimalCategory } from "@/lib/products/animal-category";
 import { t } from "@/lib/i18n";
 import { canonicalizeCategory, normalizeCategory } from "@/lib/utils";
 import { Input } from "./input";
@@ -38,6 +39,8 @@ export function CategorySelect({ name, value, extra = [], placeholder = t.common
     // an admin-typed "verdura" folds into the built-in "Verdura".
     const merged = new Map<string, string>();
     for (const c of [...DEFAULT_CATEGORIES, ...extra, ...sessionAdded, selected]) {
+      // A leftover animal category of an old product is not offered again.
+      if (isAnimalCategory(c) && c !== selected) continue;
       const key = normalizeCategory(c);
       if (key && !merged.has(key)) merged.set(key, c.trim());
     }

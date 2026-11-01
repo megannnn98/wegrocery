@@ -17,6 +17,7 @@ import { inspectListing, pickSupplierMatch, type ListingInspection } from "@/lib
 import { hasSharedColumn, suggestMapping, type TargetField } from "@/lib/csv/header-heuristics";
 import { parsePriceCell, resolvePricePerKg } from "@/lib/csv/pack-weight";
 import { upsertCycleProducts } from "@/lib/db/cycle-products";
+import { animalCategories } from "@/lib/products/animal-category";
 import { decodeUploadBase64 } from "@/lib/upload-limit";
 
 function genId(prefix: string): string {
@@ -103,6 +104,9 @@ export async function adminImportProductsCsv(supplierId: string, csvText: string
       });
     }
 
+    const animalCsv = animalCategories(results.map((r) => r.category));
+    if (animalCsv.length > 0) return { error: t.errors.animalCategory(animalCsv.join(", ")) };
+
     if (results.length > 0) {
       await db.insert(supplierProducts).values(results);
       
@@ -149,6 +153,8 @@ export async function adminImportProductsXlsx(supplierId: string, base64: string
     const buf = decodeUploadBase64(base64);
     const rows = await parseProductTemplate(buf);
     if (rows.length === 0) return { error: t.errors.csvInvalid };
+    const animalXlsx = animalCategories(rows.map((r) => r.category));
+    if (animalXlsx.length > 0) return { error: t.errors.animalCategory(animalXlsx.join(", ")) };
 
     const values = rows.map((r) => ({
       catalogProductId: genId("cp"),
@@ -451,6 +457,9 @@ export async function adminApplySupplierListingImport(
         skipped++;
       }
     }
+
+    const animalRows = animalCategories([...inserts, ...updates].map(({ row }) => row.category));
+    if (animalRows.length > 0) return { error: t.errors.animalCategory(animalRows.join(", ")) };
 
     // 3. write to supplier_products
     if (inserts.length) {
