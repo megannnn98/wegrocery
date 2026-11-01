@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
@@ -14,6 +15,7 @@ import { TabImpostazioni } from "@/components/admin/tab-impostazioni";
 import { SetupBanner } from "@/components/admin/setup/setup-banner";
 import { AdminWelcome } from "@/components/admin/admin-welcome";
 import { ADMIN_WELCOME_QUERY } from "@/lib/admin/welcome";
+import { ensureDefaultSupplier } from "@/lib/admin/default-supplier";
 import type { Metadata } from "next";
 import { adminTitle, resolveAdminRoute } from "@/lib/admin/nav";
 import type { CycleView } from "@/lib/admin/cycle-views";
@@ -60,6 +62,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Search
   const session = await requireUserSession();
   // Same rule as proxy.ts and requireAdmin: role admin and an active member.
   if (!checkAccess(session.user, "admin").ok) redirect("/");
+  await ensureDefaultSupplier();
 
   const {
     tab: tabParam,
@@ -81,8 +84,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Search
       <Suspense fallback={null}>
         <AdminNav />
       </Suspense>
-      <SetupBanner />
-      {section === "ciclo" && !view && !cycleId && newParam !== "1" && (
+      {!SIMPLE_MODE && <SetupBanner />}
+      {!SIMPLE_MODE && section === "ciclo" && !view && !cycleId && newParam !== "1" && (
         <Suspense fallback={null}>
           <AdminWelcome personId={session.user.personId ?? session.user.memberId!} reopened={welcomeParam === "1"} />
         </Suspense>

@@ -1,5 +1,6 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { EmptyIcon } from "@/components/ui-icon";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useRef, useState } from "react";
@@ -39,7 +40,7 @@ export function StoricoTabs({ orderHistory, movements, balance, bankRefs }: Prop
   // From lg the list and its detail sit side by side; below, a cycle and a
   // movement each open in a sheet.
   const wide = useWide();
-  const [tab, setTabState] = useState<Tab>(searchParams.get("tab") === "movimenti" ? "movimenti" : "ordini");
+  const [tab, setTabState] = useState<Tab>(!SIMPLE_MODE && searchParams.get("tab") === "movimenti" ? "movimenti" : "ordini");
   // The cycle shown beside the list from lg: the deep link, else the newest.
   const [picked, setPicked] = useState<string | null>(deepLinkCycleId);
   const shownCycle = orderHistory.find((o) => o.cycleId === picked) ?? orderHistory[0] ?? null;
@@ -97,7 +98,8 @@ export function StoricoTabs({ orderHistory, movements, balance, bankRefs }: Prop
     <>
       <h1 className="mb-3 text-title font-black text-foreground">{t.nav.history}</h1>
       {/* Segmented tabs */}
-      <div role="tablist" aria-label={t.nav.history} className="mb-5 flex rounded-xl bg-tint/[0.07] p-1 lg:max-w-[420px]">
+      {/* Simple mode has no balance, so no movements tab: the orders only. */}
+      <div role="tablist" aria-label={t.nav.history} hidden={SIMPLE_MODE} className="mb-5 flex rounded-xl bg-tint/[0.07] p-1 lg:max-w-[420px]">
         {TABS.map((tabKey) => (
           <button
             key={tabKey}

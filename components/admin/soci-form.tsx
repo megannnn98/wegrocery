@@ -1,5 +1,6 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { Ellipsis, X } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
@@ -159,7 +160,7 @@ export function SociForm({
                 name="role"
                 defaultValue={normalizeRole(member?.role) ?? DEFAULT_ROLE}
               >
-                {ROLES.map((r) => (
+                {ROLES.filter((r) => !SIMPLE_MODE || r !== "attivi" || normalizeRole(member?.role) === "attivi").map((r) => (
                   <option key={r} value={r}>
                     {t.roles[r]}
                   </option>
@@ -452,11 +453,13 @@ export function SociList({
           </div>
         )}
       </div>
-      <DuplicateMembers
-        pairs={duplicates}
-        members={members}
-        onMerge={(p) => requestMerge({ absorbedId: p.absorbedId, survivorId: p.survivorId })}
-      />
+      {!SIMPLE_MODE && (
+        <DuplicateMembers
+          pairs={duplicates}
+          members={members}
+          onMerge={(p) => requestMerge({ absorbedId: p.absorbedId, survivorId: p.survivorId })}
+        />
+      )}
       {renderGroup(t.roles.admin, inGroup("admin"), "bg-primary-bg text-primary-text")}
       {renderGroup(t.roles.attivi, inGroup("attivi"), "bg-accent-bg text-accent-text")}
       {renderGroup(t.roles.utenti, inGroup("utenti"), "bg-tint/[0.05] text-secondary-foreground")}

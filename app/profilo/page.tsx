@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { AppShell } from "@/components/app-shell";
 import { ByFlylabs } from "@/components/by-flylabs";
 import { LogoutButton } from "@/components/logout-button";
@@ -63,7 +64,7 @@ export default async function ProfilePage() {
   const name = person?.fullName ?? session.user.fullName ?? "";
   const channels = countChannels(resolvePreferences(prefRows));
   const family = familyState({ personId, people, invitesReceived: received.length });
-  const showFamily = settings.familiesEnabled || people.length > 1 || received.length > 0;
+  const showFamily = !SIMPLE_MODE && (settings.familiesEnabled || people.length > 1 || received.length > 0);
   const showCard = isMembershipCheckEnabled() && role !== "admin" && person != null;
   const addresses = [person?.email, person?.aliasEmail].filter((a): a is string => Boolean(a));
 
@@ -149,16 +150,20 @@ export default async function ProfilePage() {
         </SettingsSection>
       )}
 
-      <SettingsSection title={t.profile.notifications}>
-        <SettingsRow
-          href="/profilo/notifiche"
-          title={t.notifications.settings.title}
-          detail={t.profile.notificationsSummary(channels.app, channels.email, channels.total)}
-        />
-      </SettingsSection>
+      {!SIMPLE_MODE && (
+        <SettingsSection title={t.profile.notifications}>
+          <SettingsRow
+            href="/profilo/notifiche"
+            title={t.notifications.settings.title}
+            detail={t.profile.notificationsSummary(channels.app, channels.email, channels.total)}
+          />
+        </SettingsSection>
+      )}
 
       <SettingsSection title={t.profile.money}>
-        {wallet ? (
+        {SIMPLE_MODE ? (
+          <SettingsRow href="/ricarica" title={t.order.simplePay.title} detail={t.order.simplePay.details} />
+        ) : wallet ? (
           <>
             <SettingsRow href="/storico" title={t.profile.balance} detail={t.profile.balanceDetail(formatSignedMoney(balance))} />
             {topupDetail && <SettingsRow href="/ricarica" title={t.topup.title} detail={topupDetail} />}

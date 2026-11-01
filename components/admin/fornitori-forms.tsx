@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { labelClass } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-type Supplier = {
+export type Supplier = {
   supplierId: string;
   name: string;
   macroCategory: string | null;

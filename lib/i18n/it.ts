@@ -242,6 +242,11 @@ export const it = {
     noOpenOrdersHint: "Torna quando l'ordine sarà aperto.",
     emptyCatalog: "Catalogo in preparazione",
     emptyCatalogHint: "L'ordine è aperto ma i prodotti non sono ancora stati caricati. Riprova tra poco.",
+    simplePay: {
+      title: "Come pagare",
+      note: (total: string, contact: string) => `Ordine ricevuto. Paga ${total} con un bonifico (dati sotto) e scrivi su Telegram a ${contact}, così segniamo il pagamento.`,
+      details: "Dati per il bonifico",
+    },
     reproposeLastOrder: "Riproponi ultimo ordine",
     cycleNotes: "Note dell'ordine",
     totalOrder: "Totale ordine",

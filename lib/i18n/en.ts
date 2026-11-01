@@ -242,6 +242,11 @@ export const en: Strings = {
     noOpenOrdersHint: "Come back when the order is open.",
     emptyCatalog: "Catalog in preparation",
     emptyCatalogHint: "The order is open but products haven't been added yet. Check back soon.",
+    simplePay: {
+      title: "How to pay",
+      note: (total: string, contact: string) => `Order received. Pay ${total} by bank transfer (details below) and message ${contact} on Telegram so we can mark the payment.`,
+      details: "Bank transfer details",
+    },
     reproposeLastOrder: "Repeat last order",
     cycleNotes: "Order notes",
     totalOrder: "Order total",

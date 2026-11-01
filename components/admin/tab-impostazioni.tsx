@@ -11,6 +11,9 @@ import { IdentityForm } from "./identity-form";
 import { CardCyclesCard } from "./card-cycles-card";
 import { ConfigStatusCard } from "./config-status-card";
 import { FamiliesCard } from "./families-card";
+import { SupplierCard } from "./supplier-card";
+import { getAllSuppliersAdmin } from "@/lib/db/queries";
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { NamePromptCard } from "./name-prompt-card";
 import { GroupInfoCard } from "./group-info-card";
 import { PaymentSettingsForm } from "./impostazioni-form";
@@ -44,13 +47,17 @@ export async function PaymentSettingsSection() {
   });
   return (
     <>
-      <PaymentModeCard
-        mode={settings.mode}
-        state={modeState}
-        blockers={blockers}
-        cardCycles={cardCyclesSelectable(cardContext)}
-      />
-      {cardCyclesAvailable(cardContext) && <CardCyclesCard enabled={settings.cardCyclesEnabled} />}
+      {!SIMPLE_MODE && (
+        <>
+          <PaymentModeCard
+            mode={settings.mode}
+            state={modeState}
+            blockers={blockers}
+            cardCycles={cardCyclesSelectable(cardContext)}
+          />
+          {cardCyclesAvailable(cardContext) && <CardCyclesCard enabled={settings.cardCyclesEnabled} />}
+        </>
+      )}
       <PaymentSettingsForm
         // A save remounts the form with the values as stored (IBAN compacted).
         key={savedAt ?? "defaults"}
@@ -93,14 +100,20 @@ export async function IdentitySection({ section }: { section: "identity" | "cont
 }
 
 export async function TabImpostazioni() {
-  const [settings, config, misses] = await Promise.all([getPaymentSettings(), getConfigStatus(), getGuideSearchMisses()]);
+  const [settings, config, misses, suppliers] = await Promise.all([
+    getPaymentSettings(),
+    getConfigStatus(),
+    getGuideSearchMisses(),
+    SIMPLE_MODE ? getAllSuppliersAdmin() : Promise.resolve([]),
+  ]);
   return (
     <div className="space-y-4">
-      <SetupBanner revisit />
+      {!SIMPLE_MODE && <SetupBanner revisit />}
       <IdentitySection section="identity" />
       <IdentitySection section="contacts" />
+      {SIMPLE_MODE && suppliers[0] && <SupplierCard supplier={suppliers[0]} />}
       <PaymentSettingsSection />
-      <FamiliesCard enabled={settings.familiesEnabled} />
+      {!SIMPLE_MODE && <FamiliesCard enabled={settings.familiesEnabled} />}
       <NamePromptCard mode={settings.memberNamePrompt} />
       <GroupInfoCard key={settings.groupInfo ?? ""} initial={settings.groupInfo} />
       <SearchMissesCard misses={misses} />

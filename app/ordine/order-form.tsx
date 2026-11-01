@@ -1,5 +1,7 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
+import { PaymentNote } from "./payment-note";
 import { RotateCcw } from "lucide-react";
 import { EmptyIcon } from "@/components/ui-icon";
 import { Badge } from "@/components/ui/badge";
@@ -611,6 +613,8 @@ export function OrderForm({
           {draftKey !== savedKey ? t.order.discardDraft : `← ${t.order.backToOrder}`}
         </button>
       )}
+
+      {SIMPLE_MODE && hasSavedOrder && draftKey === savedKey && <PaymentNote total={orderTotal} />}
 
       {/* "Riproponi ultimo ordine" — visible only when the cart is empty
           so we never silently overwrite an in-progress order. */}

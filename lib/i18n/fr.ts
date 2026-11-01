@@ -242,6 +242,11 @@ export const fr: Strings = {
     noOpenOrdersHint: "Revenez quand la commande sera ouverte.",
     emptyCatalog: "Catalogue en préparation",
     emptyCatalogHint: "La commande est ouverte mais les produits n'ont pas encore été ajoutés. Revenez bientôt.",
+    simplePay: {
+      title: "Comment payer",
+      note: (total: string, contact: string) => `Commande reçue. Payez ${total} par virement (coordonnées ci-dessous) et écrivez à ${contact} sur Telegram pour que nous notions le paiement.`,
+      details: "Coordonnées du virement",
+    },
     reproposeLastOrder: "Reprendre la dernière commande",
     cycleNotes: "Notes de la commande",
     totalOrder: "Total de la commande",

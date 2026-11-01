@@ -1,4 +1,5 @@
 import { t } from "@/lib/i18n";
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { CYCLE_VIEW_LABELS, isCycleView, type CycleView } from "@/lib/admin/cycle-views";
 
 // The admin's navigation: a few sections, some with views, all on one route
@@ -24,17 +25,21 @@ export const ADMIN_PRIMARY: { id: AdminSection; label: string }[] = [
   { id: "catalogo", label: t.admin.nav.catalog },
 ];
 
+// Simple mode has no Statistiche (they are about suppliers and money).
 export const ADMIN_MORE: { id: AdminSection; label: string }[] = [
-  { id: "statistiche", label: t.admin.nav.stats },
+  ...(SIMPLE_MODE ? [] : [{ id: "statistiche" as const, label: t.admin.nav.stats }]),
   { id: "impostazioni", label: t.admin.nav.settings },
 ];
 
 /** The views the bar shows under a section, first one the default (the cycle draws its own). */
 export const ADMIN_VIEWS: Partial<Record<AdminSection, { id: CatalogView; label: string }[]>> = {
-  catalogo: [
-    { id: "prodotti", label: t.admin.nav.catalogProducts },
-    { id: "fornitori", label: t.admin.nav.catalogSuppliers },
-  ],
+  // One supplier in simple mode: no Suppliers view, the Catalogue is the products.
+  catalogo: SIMPLE_MODE
+    ? [{ id: "prodotti", label: t.admin.nav.catalogProducts }]
+    : [
+        { id: "prodotti", label: t.admin.nav.catalogProducts },
+        { id: "fornitori", label: t.admin.nav.catalogSuppliers },
+      ],
 };
 
 // "Come si fa?" in the admin bar: the admin guide's topic (and card) for the
@@ -74,7 +79,10 @@ export function resolveAdminRoute(
 ): { section: AdminSection; view: AdminView | null } {
   if (member && !cycle && (tab === "ordini" || (tab === "ciclo" && view === "ordini"))) return { section: "soci", view: null };
   const legacy = tab ? LEGACY[tab] : undefined;
-  if (legacy) return legacy;
+  if (legacy) {
+    // The old Suppliers tab lands on the products when there is no Suppliers view.
+    return SIMPLE_MODE && legacy.view === "fornitori" ? { section: "catalogo", view: "prodotti" } : legacy;
+  }
   const section: AdminSection = tab && SECTIONS.has(tab) ? (tab as AdminSection) : "ciclo";
   // The workspace resolves the cycle's view against the cycle's status.
   if (section === "ciclo") return { section, view: isCycleView(view) ? view : null };

@@ -1,5 +1,6 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/toast";
@@ -69,7 +70,7 @@ export function PaymentSettingsForm({
         </p>
       )}
 
-      {showLimits && (
+      {showLimits && !SIMPLE_MODE && (
         <section className={card}>
           <h3 className="text-[13px] font-bold text-foreground">{s.limitsTitle}</h3>
           <p className="mb-3 mt-1 text-[12px] text-secondary-foreground">{s.limitsHint}</p>
@@ -190,6 +191,7 @@ export function PaymentSettingsForm({
         </div>
       </section>
 
+      {!SIMPLE_MODE && (
       <section className={card}>
         <label className="flex items-start justify-between gap-3">
           <span>
@@ -217,6 +219,7 @@ export function PaymentSettingsForm({
           </p>
         )}
       </section>
+      )}
 
       <button
         type="submit"
