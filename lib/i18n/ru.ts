@@ -256,6 +256,11 @@ export const ru: Strings = {
     noOpenOrdersHint: "Загляните, когда заказ откроется.",
     emptyCatalog: "Каталог готовится",
     emptyCatalogHint: "Заказ открыт, но продукты ещё не добавлены. Загляните позже.",
+    simplePay: {
+      title: "Как оплатить",
+      note: (total: string, contact: string) => `Заказ принят. Переведите ${total} по реквизитам ниже и напишите в Telegram ${contact}, чтобы мы отметили оплату.`,
+      details: "Реквизиты для перевода",
+    },
     reproposeLastOrder: "Повторить прошлый заказ",
     cycleNotes: "Примечания к заказу",
     totalOrder: "Итого по заказу",

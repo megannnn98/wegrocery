@@ -1,5 +1,6 @@
 "use server";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { recordUsage } from "@/lib/usage/events";
 import { and, eq, sql } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -142,7 +143,8 @@ export async function saveOrder(
 
     // Uncharged order totals: needed by the credit limit and to tell whether
     // this save raises the cycle's order (trimming/cancelling is never blocked).
-    const minBalance = offline ? null : (await getPaymentSettings()).minBalance;
+    // Simple mode: the order is paid outside the app, so no balance has to cover it.
+    const minBalance = offline || SIMPLE_MODE ? null : (await getPaymentSettings()).minBalance;
     const checkEnabled = isMembershipCheckEnabled() && member.role !== "admin";
     const pending =
       minBalance !== null || checkEnabled

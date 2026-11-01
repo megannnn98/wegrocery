@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { BalanceDueCard } from "@/components/balance/balance-due-card";
@@ -59,7 +60,7 @@ export default async function HomePage({
   // account they shop on.
   const person = personId === memberId ? member : await getMemberById(personId);
   const reopenWelcome = (await searchParams)[WELCOME_QUERY] === "1";
-  const showWelcome = reopenWelcome || (person !== null && person.welcomeDismissedAt === null);
+  const showWelcome = !SIMPLE_MODE && (reopenWelcome || (person !== null && person.welcomeDismissedAt === null));
   // What the card ticks comes from real rows, only read while it shows.
   const welcomeDoneSteps = showWelcome ? welcomeDone(await getWelcomeFacts(memberId, personId)) : [];
   const welcomeSavedStep = person !== null && isWelcomeStep(person.welcomeStep) ? person.welcomeStep : null;
@@ -227,7 +228,7 @@ export default async function HomePage({
   const balanceBlock = (
     <>
       {/* ── Saldo hero card (wallet groups only) ── */}
-      {!payPerOrder && (
+      {!payPerOrder && !SIMPLE_MODE && (
         <>
       <div
         className={`mb-3.5 rounded-card pt-5 px-5.5 pb-5.5 ${
@@ -371,7 +372,7 @@ export default async function HomePage({
   return (
     <AppShell email={session.user.email} name={session.user.fullName} isAdmin={role === "admin"} memberId={memberId} personId={session.user.personId} layout="wide">
       <h1 className="sr-only">{t.nav.home}</h1>
-      {role === "admin" && <SetupBanner />}
+      {role === "admin" && !SIMPLE_MODE && <SetupBanner />}
       {showWelcome && (
         <WelcomeCard
           appName={brand.appName}
@@ -408,7 +409,7 @@ export default async function HomePage({
               {pickupBlock}
             </>
           )}
-          {movementsBlock}
+          {!SIMPLE_MODE && movementsBlock}
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { useState } from "react";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -84,19 +85,23 @@ export function OrderTotals({ orderTotal, payAmount, afterBalance, walletFeeCent
             </dd>
           </div>
         ))}
-      <div className="flex justify-between gap-3 border-t border-border pt-1 font-bold text-foreground">
-        <dt>{payAmount ? t.order.pay.toPay : t.order.balanceAfter}</dt>
-        <dd className="tabular-nums">
-          {payAmount ? formatEur(payAmount.chargeCents / 100) : formatSignedMoney(afterBalance)}
-        </dd>
-      </div>
+      {!SIMPLE_MODE && (
+        <div className="flex justify-between gap-3 border-t border-border pt-1 font-bold text-foreground">
+          <dt>{payAmount ? t.order.pay.toPay : t.order.balanceAfter}</dt>
+          <dd className="tabular-nums">
+            {payAmount ? formatEur(payAmount.chargeCents / 100) : formatSignedMoney(afterBalance)}
+          </dd>
+        </div>
+      )}
     </dl>
     <p className="mt-3 text-[13px] leading-[1.45] text-muted-foreground">
       {payAmount
         ? payAmount.outcome === "pay" && payAmount.chargeCents > payAmount.requiredCents - payAmount.coveredCents
           ? t.order.pay.minimumNote(formatEur(ORDER_PAYMENT_MIN_CENTS / 100))
           : t.order.pay.feeHint
-        : t.order.feeEstimateHint}
+        : SIMPLE_MODE
+          ? ""
+          : t.order.feeEstimateHint}
     </p>
     </>
   );
@@ -138,7 +143,7 @@ export function OrderTotals({ orderTotal, payAmount, afterBalance, walletFeeCent
                     ? `${t.order.pay.toPay} ${formatEur(payAmount.chargeCents / 100)}`
                     : t.order.pay.nothingToPay}
                 </span>
-              ) : (
+              ) : SIMPLE_MODE ? null : (
                 <span className="text-secondary-foreground">
                   {t.order.balanceAfter}{" "}
                   <span

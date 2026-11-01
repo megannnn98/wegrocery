@@ -1,3 +1,5 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
+import { notFound } from "next/navigation";
 import { BackLink } from "@/components/ui/back-link";
 import { AppShell } from "@/components/app-shell";
 import { FamilyPanel } from "@/components/family-panel";
@@ -14,6 +16,7 @@ export const metadata: Metadata = { title: t.family.title };
 // Families (lib/actions/family.ts): who shares this account, invitations
 // sent and received, leave or remove.
 export default async function FamilyPage() {
+  if (SIMPLE_MODE) notFound();
   const session = await requireUserSession();
   const role = getUserRole(session);
   const memberId = session.user.memberId!;

@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import Link from "next/link";
 import { brand as staticBrand } from "@/lib/brand";
 import { getBrand } from "@/lib/brand/get-brand";
@@ -84,7 +85,7 @@ export default async function GuidaPage() {
         </p>
 
         {/* Novità: teaser of the latest release, linking the changelog */}
-        {latest && (
+        {!SIMPLE_MODE && latest && (
           <section className="mb-6 overflow-hidden rounded-card border border-primary-mid bg-primary-bg">
             <div className="flex items-baseline justify-between gap-2 border-b border-primary-mid/40 px-4.5 py-3">
               <div>

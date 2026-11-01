@@ -242,6 +242,11 @@ export const es: Strings = {
     noOpenOrdersHint: "Vuelve cuando el pedido esté abierto.",
     emptyCatalog: "Catálogo en preparación",
     emptyCatalogHint: "El pedido está abierto pero aún no se han añadido productos. Vuelve pronto.",
+    simplePay: {
+      title: "Cómo pagar",
+      note: (total: string, contact: string) => `Pedido recibido. Paga ${total} por transferencia (datos abajo) y escribe a ${contact} en Telegram para registrar el pago.`,
+      details: "Datos de la transferencia",
+    },
     reproposeLastOrder: "Repetir el último pedido",
     cycleNotes: "Notas del pedido",
     totalOrder: "Total del pedido",

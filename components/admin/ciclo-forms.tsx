@@ -4,6 +4,7 @@ import { confirm } from "@/components/ui/confirm-dialog";
 import { useState, useTransition, useEffect, useCallback } from "react";
 import { toast } from "@/components/ui/toast";
 import { Sheet } from "@/components/ui/sheet";
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { formatDeadline, formatPickupSlot } from "@/lib/i18n/deadline";
 import { t } from "@/lib/i18n";
 import { formatMoney, formatHandlingFee } from "@/lib/i18n/format";
@@ -537,10 +538,11 @@ export function EditCycleForm({
       pickup2Date: buildDateTime(fd.get("pickup2DateOnly") as string, fd.get("pickup2StartTime") as string),
       pickup2EndTime: fd.get("pickup2EndTime") as string,
       notes: fd.get("notes") as string,
-      supplierId: fd.get("supplierId") as string,
+      // Simple mode has no supplier, delivery or fee inputs: the cycle keeps what it has.
+      ...(!SIMPLE_MODE && { supplierId: fd.get("supplierId") as string }),
       // Manual (distinta-imported) shipping has no inputs here: send no
       // shipping fields at all so the per-member charges stay as imported.
-      ...(shippingMode !== "manual" && {
+      ...(shippingMode !== "manual" && !SIMPLE_MODE && {
         shippingMode,
         shippingCostPerMember: fd.get("shippingCostPerMember") as string,
         shippingTotal: fd.get("shippingTotal") as string,
@@ -550,9 +552,11 @@ export function EditCycleForm({
       ? {}
       : {
           orderCloseAt: fd.get("orderCloseAt") as string,
-          accessLevel: fd.get("accessLevel") as string,
-          handlingFeeType: fd.get("handlingFeeType") as string,
-          handlingFeeValue: fd.get("handlingFeeValue") as string,
+          ...(!SIMPLE_MODE && {
+            accessLevel: fd.get("accessLevel") as string,
+            handlingFeeType: fd.get("handlingFeeType") as string,
+            handlingFeeValue: fd.get("handlingFeeValue") as string,
+          }),
         };
     startTransition(async () => {
       const result = await adminUpdateCycle(cycle.cycleId, {
@@ -611,7 +615,7 @@ export function EditCycleForm({
             </p>
           </div>
         </div>
-      ) : (
+      ) : SIMPLE_MODE ? null : (
         <ShippingModeFields
           mode={shippingMode}
           onModeChange={setShippingMode}
@@ -620,7 +624,7 @@ export function EditCycleForm({
         />
       )}
 
-      {!isClosed && (
+      {!isClosed && !SIMPLE_MODE && (
         <HandlingFeeFields
           defaultType={cycleFee?.type ?? "none"}
           defaultValue={cycleFee ? String(cycleFee.value) : ""}
@@ -639,6 +643,7 @@ export function EditCycleForm({
         defPickup2End={cycle.pickup2EndTime ?? ""}
       />
 
+      {!SIMPLE_MODE && (
       <div className={isClosed ? "" : "grid grid-cols-2 gap-3"}>
         <div>
           <label className="block">
@@ -673,6 +678,7 @@ export function EditCycleForm({
           </div>
         )}
       </div>
+      )}
       <div>
         <label className="block">
           <span className={labelClass}>{t.admin.common.notes}
@@ -846,32 +852,51 @@ export function CreateCycleForm({
           </label>
         </div>
 
-        <ShippingModeFields
-          mode={shippingMode}
-          onModeChange={setShippingMode}
-          defaultPerMember=""
-          defaultTotal=""
-        />
+        {SIMPLE_MODE ? (
+          // No delivery, no handling fee, no card payment: the form still posts them, empty.
+          <>
+            <input type="hidden" name="shippingCostPerMember" value="" />
+            <input type="hidden" name="shippingTotal" value="" />
+            <input type="hidden" name="handlingFeeType" value="none" />
+            <input type="hidden" name="handlingFeeValue" value="" />
+          </>
+        ) : (
+          <>
+            <ShippingModeFields
+              mode={shippingMode}
+              onModeChange={setShippingMode}
+              defaultPerMember=""
+              defaultTotal=""
+            />
 
-        {(cardSelectable || cardSwitchedOff) && (
-          <PaymentModeFields mode={paymentMode} onModeChange={setPaymentMode} cardDisabled={!cardSelectable} />
+            {(cardSelectable || cardSwitchedOff) && (
+              <PaymentModeFields mode={paymentMode} onModeChange={setPaymentMode} cardDisabled={!cardSelectable} />
+            )}
+
+            <HandlingFeeFields
+              // A new mode starts from its own last fee.
+              key={paymentMode}
+              defaultType={handlingFee?.type ?? "none"}
+              defaultValue={handlingFee?.value ?? ""}
+              allowNone={paymentMode === "wallet"}
+              note={
+                paymentMode === "per_order" && shippingMode === "proportional"
+                  ? t.admin.cycle.perOrderProportionalNote
+                  : null
+              }
+            />
+          </>
         )}
-
-        <HandlingFeeFields
-          // A new mode starts from its own last fee.
-          key={paymentMode}
-          defaultType={handlingFee?.type ?? "none"}
-          defaultValue={handlingFee?.value ?? ""}
-          allowNone={paymentMode === "wallet"}
-          note={
-            paymentMode === "per_order" && shippingMode === "proportional"
-              ? t.admin.cycle.perOrderProportionalNote
-              : null
-          }
-        />
 
         <PickupSection />
 
+        {SIMPLE_MODE ? (
+          // One supplier, one access level: nothing to choose.
+          <>
+            <input type="hidden" name="supplierId" value={suppliers[0]?.supplierId ?? ""} />
+            <input type="hidden" name="accessLevel" value={DEFAULT_ACCESS_LEVEL} />
+          </>
+        ) : (
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block">
@@ -898,6 +923,7 @@ export function CreateCycleForm({
             <p className="mt-1 text-label text-muted-foreground">{t.admin.cycle.accessHint}</p>
           </div>
         </div>
+        )}
         <div>
           <label className="block">
             <span className={labelClass}>{t.admin.common.notes}

@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
@@ -90,7 +91,7 @@ export async function AppShell({ children, email, name, isAdmin, memberId, perso
 
         <main id="main" tabIndex={-1} className="flex-1 px-5 py-4 pb-[calc(var(--spacing-nav-h)+1rem)] md:px-8 md:py-6">
           <AppRefresh />
-          {!namePrompt && <WelcomeResume />}
+          {!namePrompt && !SIMPLE_MODE && <WelcomeResume />}
           <div className={CONTENT_WIDTH[layout]}>
           {namePrompt ? (
             <NamePrompt

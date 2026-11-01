@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import Link from "next/link";
 import { brand } from "@/lib/brand";
 import { AppShell } from "@/components/app-shell";
@@ -12,6 +14,8 @@ type SearchParams = Promise<{ lang?: string; tech?: string | string[] }>;
 // What's new (Playbook 4.5 and 4.6): the FlyLabs Kit `changelog` module in the
 // app shell. Changes for members by default, technical ones behind the switch.
 export default async function ChangelogPage({ searchParams }: { searchParams: SearchParams }) {
+  // The upstream project's release notes, in English: not for a simple group.
+  if (SIMPLE_MODE) notFound();
   const session = await requireUserSession();
   const role = getUserRole(session);
 

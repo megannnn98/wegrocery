@@ -1,5 +1,6 @@
 "use client";
 
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 import { confirm } from "@/components/ui/confirm-dialog";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { adminArchiveCatalogProduct } from "@/lib/actions/admin";
@@ -112,25 +113,27 @@ export function SupplierCatalogList({
           </summary>
           <div className="mt-2 space-y-3">
             <p className="text-label text-secondary-foreground">{t.admin.products.otherFormatsHint}</p>
-            <label className="block">
-              <span className={labelClass}>
-                {t.admin.products.uploadSupplierLabel}
-              </span>
-              <NativeSelect
-                value={uploadSupplierId}
-                onChange={(e) => setUploadSupplierId(e.target.value)}
-              >
-                {suppliers.length === 0 ? (
-                  <option value="">{t.admin.products.noSupplierAvailable}</option>
-                ) : (
-                  suppliers.map((supplier) => (
-                    <option key={supplier.supplierId} value={supplier.supplierId}>
-                      {supplier.name}
-                    </option>
-                  ))
-                )}
-              </NativeSelect>
-            </label>
+            {!SIMPLE_MODE && (
+              <label className="block">
+                <span className={labelClass}>
+                  {t.admin.products.uploadSupplierLabel}
+                </span>
+                <NativeSelect
+                  value={uploadSupplierId}
+                  onChange={(e) => setUploadSupplierId(e.target.value)}
+                >
+                  {suppliers.length === 0 ? (
+                    <option value="">{t.admin.products.noSupplierAvailable}</option>
+                  ) : (
+                    suppliers.map((supplier) => (
+                      <option key={supplier.supplierId} value={supplier.supplierId}>
+                        {supplier.name}
+                      </option>
+                    ))
+                  )}
+                </NativeSelect>
+              </label>
+            )}
             <CatalogCsvActions supplierId={uploadSupplierId} />
           </div>
         </details>
@@ -165,22 +168,24 @@ export function SupplierCatalogList({
             onChange={(e) => setQuery(e.target.value)}
             className="rounded-xl px-4 py-2.5"
           />
-          <label className="block">
-            <span className={labelClass}>
-              {t.admin.products.supplierFilter}
-            </span>
-            <NativeSelect
-              value={supplierFilter}
-              onChange={(e) => setSupplierFilter(e.target.value)}
-            >
-              <option value={ALL}>{t.admin.products.allSuppliers}</option>
-              {suppliers.map((supplier) => (
-                <option key={supplier.supplierId} value={supplier.supplierId}>
-                  {supplier.name}
-                </option>
-              ))}
-            </NativeSelect>
-          </label>
+          {!SIMPLE_MODE && (
+            <label className="block">
+              <span className={labelClass}>
+                {t.admin.products.supplierFilter}
+              </span>
+              <NativeSelect
+                value={supplierFilter}
+                onChange={(e) => setSupplierFilter(e.target.value)}
+              >
+                <option value={ALL}>{t.admin.products.allSuppliers}</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.supplierId} value={supplier.supplierId}>
+                    {supplier.name}
+                  </option>
+                ))}
+              </NativeSelect>
+            </label>
+          )}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
@@ -209,7 +214,7 @@ export function SupplierCatalogList({
                 onChange={(e) => setGroupBy(e.target.value as GroupBy)}
               >
                 <option value="category">{t.admin.products.groupByCategory}</option>
-                <option value="supplier">{t.admin.products.groupBySupplier}</option>
+                {!SIMPLE_MODE && <option value="supplier">{t.admin.products.groupBySupplier}</option>}
               </NativeSelect>
             </label>
           </div>
@@ -254,7 +259,7 @@ export function SupplierCatalogList({
                         )}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-label text-secondary-foreground">
-                        <span>{product.supplierName}</span>
+                        {!SIMPLE_MODE && <span>{product.supplierName}</span>}
                         {product.category && <span>{product.category}</span>}
                         {product.variant && <span>{product.variant}</span>}
                         {product.format && <span>{product.format}</span>}

@@ -1,3 +1,4 @@
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 // Notification categories are the user-facing grouping shown in the
 // preferences panel. They are a level above the raw `notifications.type`
 // values emitted by the server: several legacy types collapse into one
@@ -107,5 +108,7 @@ export function channelsForType(
 ): ChannelPrefs {
   const category = categoryForType(type);
   if (category === null) return { app: true, email: false };
+  // Simple mode: the bell only, no email to members (the sender can only reach the admin).
+  if (SIMPLE_MODE) return { ...resolved[category], email: false };
   return resolved[category];
 }

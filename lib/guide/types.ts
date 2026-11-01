@@ -3,6 +3,7 @@
 // client search component can import it and it is unit tested.
 
 import type { PaymentMode } from "@/lib/payments/settings";
+import { SIMPLE_MODE } from "@/lib/simple-mode";
 
 // What a card needs from the deploy to make sense. Every listed key must
 // match; a card without conditions is always shown.
@@ -65,10 +66,27 @@ export function isVisible(when: GuideCondition | undefined, ctx: GuideContext): 
   return (Object.keys(when) as (keyof GuideCondition)[]).every((key) => when[key] === ctx[key]);
 }
 
+// Cards about what simple mode hides (balance and top-ups, card payments,
+// families, roles, delivery, several suppliers, email sign-in, statistics).
+const HIDDEN_IN_SIMPLE_MODE = new Set([
+  // members
+  "come-funziona-saldo", "ricarica-online", "ricarica-cassa", "saldo-negativo", "spese-preparazione",
+  "come-si-paga", "spese-preparazione-carta", "rimborsi", "da-saldare", "credito", "movimenti",
+  "fare-ordine-carta", "modificare-ordine-carta", "dopo-chiusura-carta", "preferenze-notifiche",
+  "link-non-funziona", "cambiare-email", "quale-email",
+  "cos-e-famiglia", "invitare-famiglia", "accettare-famiglia", "uscire-famiglia",
+  // admins
+  "configurazione-guidata", "ruoli", "pagamento-ciclo", "soldi-chiusura-carta", "spedizione", "chiudi-conti",
+  "rimborsi-da-ritentare", "aggiungere-fornitore", "doppioni", "famiglie-admin", "modalita-pagamento",
+  "collegare-carta", "ricerche-statistiche",
+]);
+
 // The guide as this deploy shows it: hidden cards removed, and topics left
 // without cards removed too.
 export function visibleGuide(content: GuideContent, ctx: GuideContext): GuideContent {
-  const articles = content.articles.filter((a) => isVisible(a.when, ctx));
+  const articles = content.articles.filter(
+    (a) => isVisible(a.when, ctx) && !(SIMPLE_MODE && HIDDEN_IN_SIMPLE_MODE.has(a.slug)),
+  );
   const used = new Set(articles.map((a) => a.topic));
   return { ...content, articles, topics: content.topics.filter((t) => used.has(t.id)) };
 }

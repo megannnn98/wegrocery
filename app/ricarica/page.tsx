@@ -1,3 +1,4 @@
+import { PAYMENT_CONTACT, SIMPLE_MODE } from "@/lib/simple-mode";
 import { and, eq } from "drizzle-orm";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
@@ -112,7 +113,7 @@ export default async function RicaricaPage({
   }
   // Without the card cycles not settled yet (lib/payments/balance-due.ts).
   const balance = await getWalletBalance(getDb(), memberId, member?.paysOffline ?? false);
-  const online = settings.onlineTopupAvailable && !payPerOrder;
+  const online = settings.onlineTopupAvailable && !payPerOrder && !SIMPLE_MODE;
   const bank = settings.bankTransfer;
   const memberName = member?.fullName ?? session.user.fullName ?? session.user.email;
   // Each recent order paid by bank transfer, with its reference.
@@ -124,14 +125,14 @@ export default async function RicaricaPage({
   // The group's maximum balance, in cents: online top-ups stop there, the
   // bank section says how much still fits.
   const balanceCents = Math.round(balance * 100);
-  const maxBalanceCents = settings.maxBalance === null ? null : Math.round(settings.maxBalance * 100);
+  const maxBalanceCents = SIMPLE_MODE || settings.maxBalance === null ? null : Math.round(settings.maxBalance * 100);
   const ceilingCents = topupCeilingCents(balanceCents, maxBalanceCents);
   const roomCents = maxBalanceCents === null ? null : maxBalanceCents - balanceCents;
 
   return (
     <AppShell email={session.user.email} name={session.user.fullName} isAdmin={role === "admin"} memberId={memberId} personId={session.user.personId}>
       <div className="mb-4 flex items-center gap-2">
-        <h1 className="text-[22px] font-black tracking-[-0.02em] text-foreground">{t.topup.title}</h1>
+        <h1 className="text-[22px] font-black tracking-[-0.02em] text-foreground">{SIMPLE_MODE ? t.order.simplePay.title : t.topup.title}</h1>
         <HelpLink href="/guida/soldi" />
       </div>
 
@@ -142,7 +143,12 @@ export default async function RicaricaPage({
         </div>
       )}
 
-      <BalanceSummary label={t.topup.currentBalance} balance={balance} />
+      {!SIMPLE_MODE && <BalanceSummary label={t.topup.currentBalance} balance={balance} />}
+      {SIMPLE_MODE && PAYMENT_CONTACT && (
+        <p className="mb-4 text-[14px] text-foreground">
+          Telegram: <strong>{PAYMENT_CONTACT}</strong>
+        </p>
+      )}
 
       {online && (
         <section className="mb-4 rounded-card border border-border bg-card p-4.5 shadow-card">
