@@ -1,7 +1,7 @@
 import { brand } from "@/lib/brand";
 import type { Locale } from "@/lib/brand/types";
 
-// The preset product categories. The keys are the Italian names the matching
+// The preset product categories (vegan only: no meat, fish, dairy or eggs). The keys are the Italian names the matching
 // code in lib/utils.ts works with; what an admin sees and what gets stored on
 // a product is the label of the instance's locale. Only Russian has its own
 // labels so far, the other locales keep the Italian ones.
@@ -10,14 +10,12 @@ export const CATEGORY_KEYS = [
   "Verdura",
   "Pane e cereali",
   "Pasta e riso",
-  "Latticini",
-  "Uova",
-  "Carne",
-  "Pesce",
+  "Alternative vegetali",
   "Conserve",
   "Olio e aceto",
   "Bevande",
   "Dolci",
+  "Snack e superfood",
   "Altro",
 ] as const;
 
@@ -28,14 +26,12 @@ const RU: Record<CategoryKey, string> = {
   Verdura: "Овощи",
   "Pane e cereali": "Хлеб и злаки",
   "Pasta e riso": "Макароны и рис",
-  Latticini: "Молочные продукты",
-  Uova: "Яйца",
-  Carne: "Мясо",
-  Pesce: "Рыба",
+  "Alternative vegetali": "Растительные альтернативы",
   Conserve: "Консервы",
   "Olio e aceto": "Масло и уксус",
   Bevande: "Напитки",
   Dolci: "Сладости",
+  "Snack e superfood": "Снэки и суперфуды",
   Altro: "Другое",
 };
 
