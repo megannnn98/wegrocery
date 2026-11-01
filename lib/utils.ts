@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
-import { categoryLabel, type CategoryKey } from "@/lib/categories";
+import { brand } from "@/lib/brand";
+import { categoryLabel, guessRuCategory, type CategoryKey } from "@/lib/categories";
 import {
   formatMoney,
   formatDate as formatDateIntl,
@@ -166,28 +167,10 @@ const CATEGORY_MAP: [RegExp, CategoryKey][] = [
   [/pomodor|melanz|patat|carota|carote|mais|peperon|cetriol|zucchin|zucca|zucche|insalata|lattug|radicchio|spinac|sedano|finocchio|erbett|cicoria|broccol|cavolo|cavoli|verza|cavolfiore|aglio|cipoll|porro|porrino|fungo|funghi|porcino|champignon|carciof|asparag|biet[ao]|bietol|rapa|barbabietol|fagiol|fava|fave\b|lenticchi|pisello|piselli|cece|ceci\b|topinambur|ravanell|rucola|verdur|ortagg/i, "Verdura"],
 ];
 
-// Russian names, same order logic as above (no \b: it does not know Cyrillic).
-const CATEGORY_MAP_RU: [RegExp, CategoryKey][] = [
-  [/рыб|лосос|сёмг|семг|тунец|треск|форел|сельд|скумбри|креветк|мидии|кальмар|осьминог/i, "Pesce"],
-  [/колбас|сосиск|сардельк|ветчин|бекон|салями|буженин|мяс|говядин|свинин|телятин|баранин|курица|курин|цыплён|цыплен|индейк|утк|фарш|котлет|шашлык/i, "Carne"],
-  [/яйц/i, "Uova"],
-  [/молок|кефир|йогурт|творог|сыр|сметан|сливк|масло сливочное|ряженк|брынз|моцарелл|рикотт/i, "Latticini"],
-  [/макарон|паста|спагетти|рис\b|рис |гречк|лапш|вермишел/i, "Pasta e riso"],
-  [/хлеб|батон|булк|лепёшк|лепешк|пирог|мук|овсянк|крупа|круп|злак|хлопья|сухар|печенье/i, "Pane e cereali"],
-  [/масло растительное|оливков|подсолнечн|уксус/i, "Olio e aceto"],
-  [/вино|пиво|сок\b|сок |вода|воду|чай|кофе|лимонад|компот|квас|напиток/i, "Bevande"],
-  [/мёд|мед\b|варенье|джем|конфет|шоколад|торт|пирожн|вафл|зефир|сахар|сладост/i, "Dolci"],
-  [/консерв|томатная паста|томатное пюре|тушёнк|тушенк|соленья|маринад|горошек/i, "Conserve"],
-  [/яблок|груш|апельсин|лимон|банан|ананас|виноград|клубник|малин|черник|смородин|киви|слив|персик|вишн|черешн|арбуз|дын|абрикос|мандарин|фрукт/i, "Frutta"],
-  [/помидор|томат|огурц|картоф|морков|капуст|лук\b|лук |чеснок|перец|кабачок|тыкв|свёкл|свекл|салат|шпинат|редис|баклажан|зелень|укроп|петрушк|гриб|овощ/i, "Verdura"],
-];
-
 export function guessProductCategory(name: string): string | null {
   if (!name) return null;
+  if (brand.locale === "ru") return guessRuCategory(name);
   for (const [pattern, category] of CATEGORY_MAP) {
-    if (pattern.test(name)) return categoryLabel(category);
-  }
-  for (const [pattern, category] of CATEGORY_MAP_RU) {
     if (pattern.test(name)) return categoryLabel(category);
   }
   return null;

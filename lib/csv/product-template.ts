@@ -1,7 +1,6 @@
 import ExcelJS from "exceljs";
 import { t } from "@/lib/i18n";
 import { brand } from "@/lib/brand";
-import { categoryLabel, type CategoryKey } from "@/lib/categories";
 
 const FILL_HEADER = "FF2D2B29";
 const FILL_EXAMPLE = "FFFAF8F5";
@@ -41,15 +40,15 @@ const EXAMPLES: Array<{
 ];
 
 const EXAMPLES_RU: typeof EXAMPLES = [
-  { name: "Яблоки", variant: "Антоновка, органик", format: "1 кг", price: 2.5, pricePerKg: 2.5, category: "Frutta", emoji: "🍎", notes: "Местный урожай" },
-  { name: "Микс салата", variant: "Органик", format: "Контейнер 200 г", price: 3.0, pricePerKg: 15.0, category: "Verdura", emoji: "🥬", notes: "Утренний сбор" },
-  { name: "Деревенский хлеб", variant: "", format: "Буханка 1 кг", price: 4.5, pricePerKg: 4.5, category: "Pane e cereali", emoji: "🍞", notes: "На закваске" },
-  { name: "Цельнозерновая паста", variant: "", format: "Пачка 500 г", price: 1.8, pricePerKg: "", category: "Pasta e riso", emoji: "🍝", notes: "" },
-  { name: "Моцарелла", variant: "Из коровьего молока", format: "Упаковка 250 г", price: 4.2, pricePerKg: "", category: "Latticini", emoji: "🧀", notes: "Употребить в течение 3 дней" },
-  { name: "Яйца", variant: "Свободный выгул", format: "Упаковка 6 шт.", price: 3.0, pricePerKg: "", category: "Uova", emoji: "🥚", notes: "Вольное содержание" },
-  { name: "Курица целая", variant: "", format: "Около 1,5 кг", price: 12.0, pricePerKg: 8.0, category: "Carne", emoji: "🍗", notes: "Взвешивается отдельно" },
-  { name: "Томатное пюре", variant: "Органик", format: "Бутылка 700 г", price: 3.5, pricePerKg: "", category: "Conserve", emoji: "🍅", notes: "100% итальянские томаты" },
-  { name: "Оливковое масло", variant: "Коратина", format: "Бутылка 750 мл", price: 14.0, pricePerKg: "", category: "Olio e aceto", emoji: "🫒", notes: "Холодный отжим" },
+  { name: "Тофу", variant: "Органик", format: "Упаковка 250 г", price: 1500, pricePerKg: 6000, category: "Растительные сыры, тофу", emoji: "🌱", notes: "Хранить в холодильнике" },
+  { name: "Овсяное молоко", variant: "Без сахара", format: "Бутылка 1 л", price: 1800, pricePerKg: "", category: "Не молочное, сметана, йогурты, альтернативное молоко", emoji: "🥛", notes: "Встряхнуть перед употреблением" },
+  { name: "Хлебцы гречневые", variant: "", format: "Упаковка 100 г", price: 900, pricePerKg: 9000, category: "Хлеб, крекеры и хлебцы", emoji: "🍞", notes: "" },
+  { name: "Хумус классический", variant: "", format: "Баночка 200 г", price: 1700, pricePerKg: "", category: "Не масло, хумусы, паштеты, намазки", emoji: "🥣", notes: "Употребить в течение 5 дней" },
+  { name: "Гранола с орехами", variant: "Без сахара", format: "Пакет 300 г", price: 2400, pricePerKg: 8000, category: "Завтраки, каши, гранола", emoji: "🥣", notes: "" },
+  { name: "Макароны из нута", variant: "Без глютена", format: "Пачка 250 г", price: 1900, pricePerKg: "", category: "Без глютена", emoji: "🍝", notes: "" },
+  { name: "Оливковое масло", variant: "Холодный отжим", format: "Бутылка 500 мл", price: 5200, pricePerKg: "", category: "Масла холодного отжима, масла для жарки", emoji: "🫒", notes: "" },
+  { name: "Батончик из фиников", variant: "Сыроедный", format: "Упаковка 40 г", price: 700, pricePerKg: "", category: "ЗОЖ снэки и батончики", emoji: "🍫", notes: "Без добавленного сахара" },
+  { name: "Чай матча", variant: "Церемониальный", format: "Банка 30 г", price: 6500, pricePerKg: "", category: "Чай, матча, цикорий, сборы", emoji: "🍵", notes: "" },
 ];
 
 export async function buildProductTemplate(): Promise<Buffer> {
@@ -96,7 +95,7 @@ export async function buildProductTemplate(): Promise<Buffer> {
       ppkCell.value = ex.pricePerKg;
       ppkCell.numFmt = "0.00";
     }
-    ws.getCell(r, 6).value = examples === EXAMPLES_RU ? categoryLabel(ex.category as CategoryKey) : ex.category;
+    ws.getCell(r, 6).value = ex.category;
     ws.getCell(r, 7).value = ex.emoji;
     ws.getCell(r, 7).alignment = { horizontal: "center" };
     ws.getCell(r, 8).value = ex.notes;
