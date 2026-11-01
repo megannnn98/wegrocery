@@ -28,19 +28,14 @@ describe("canonicalizeCategory", () => {
 });
 
 describe("guessProductCategory", () => {
-  it("has no animal category to guess: meat, fish and dairy names stay uncategorised", () => {
-    expect(guessProductCategory("Gamberi")).toBeNull();
-    expect(guessProductCategory("Pollo intero")).toBeNull();
-    expect(guessProductCategory("Mozzarella")).toBeNull();
+  it("puts seafood before meat so shellfish don't fall into Carne", () => {
+    expect(guessProductCategory("Gamberi")).toBe("Pesce");
+    expect(guessProductCategory("Cozze")).toBe("Pesce");
   });
 
-  it("keeps cipollotto in Verdura", () => {
+  it("uses a word boundary on pollo so cipollotto stays Verdura", () => {
     expect(guessProductCategory("Cipollotto fresco")).toBe("Verdura");
-  });
-
-  it("guesses the plant-based categories", () => {
-    expect(guessProductCategory("Tofu naturale")).toBe("Alternative vegetali");
-    expect(guessProductCategory("Barretta proteica")).toBe("Snack e superfood");
+    expect(guessProductCategory("Pollo intero")).toBe("Carne");
   });
 
   it("returns null when nothing matches, instead of guessing wrong", () => {

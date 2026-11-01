@@ -147,10 +147,13 @@ export function getProductEmojiOrNull(name: string): string | null {
 // rather than guessing wrong. Keep the category strings in sync with
 // components/ui/category-select.tsx.
 const CATEGORY_MAP: [RegExp, CategoryKey][] = [
-  [/tofu|tempeh|seitan|vegetal|vegan/i, "Alternative vegetali"],
-  [/barrett|snack|chips|superfood|spirulina|\bchia\b|proteine/i, "Snack e superfood"],
+  // Pesce before Carne so "polpo/seppia" etc. don't fall into meat.
+  [/pesce|salmone|tonno|merluzzo|orata|branzino|alici|acciug|sgombro|gamber|cozze|vongole|calamar|seppia|polpo|baccal/i, "Pesce"],
   // `\bpoll` (word boundary) so "cipollotto" falls through to Verdura instead
   // of matching "pollo" mid-word.
+  [/\bpoll|gallina|tacchino|anatra|carne|manzo|vitello|maiale|salume|salsicc|prosciutto|speck|bresaola|salame|guanciale|pancetta|hamburger/i, "Carne"],
+  [/uov[ao]/i, "Uova"],
+  [/latte|yogurt|kefir|formagg|ricotta|mozzarella|pecorino|parmigian|stracchino|caciotta|burro|panna|mascarpone|gorgonzola/i, "Latticini"],
   [/pasta|spaghett|penne|rigatoni|fusilli|maccheron|tagliatell|gnocch|lasagn|riso\b|risotto/i, "Pasta e riso"],
   [/pane|focacc|pizza|grano|farro|orzo|avena|farina|cereal|crusca|cracker|grissin|fett[ae] biscott/i, "Pane e cereali"],
   [/olio|aceto/i, "Olio e aceto"],
@@ -165,9 +168,11 @@ const CATEGORY_MAP: [RegExp, CategoryKey][] = [
 
 // Russian names, same order logic as above (no \b: it does not know Cyrillic).
 const CATEGORY_MAP_RU: [RegExp, CategoryKey][] = [
-  [/тофу|темпе|сейтан|веган|растительн|альтернатив/i, "Alternative vegetali"],
-  [/батончик|снэк|чипс|суперфуд|спирулин|протеин|чиа/i, "Snack e superfood"],
-  [/макарон|паста|спагетти|рис(?![а-яё])|гречк|лапш|вермишел/i, "Pasta e riso"],
+  [/рыб|лосос|сёмг|семг|тунец|треск|форел|сельд|скумбри|креветк|мидии|кальмар|осьминог/i, "Pesce"],
+  [/колбас|сосиск|сардельк|ветчин|бекон|салями|буженин|мяс|говядин|свинин|телятин|баранин|курица|курин|цыплён|цыплен|индейк|утк|фарш|котлет|шашлык/i, "Carne"],
+  [/яйц/i, "Uova"],
+  [/молок|кефир|йогурт|творог|сыр|сметан|сливк|масло сливочное|ряженк|брынз|моцарелл|рикотт/i, "Latticini"],
+  [/макарон|паста|спагетти|рис\b|рис |гречк|лапш|вермишел/i, "Pasta e riso"],
   [/хлеб|батон|булк|лепёшк|лепешк|пирог|мук|овсянк|крупа|круп|злак|хлопья|сухар|печенье/i, "Pane e cereali"],
   [/масло растительное|оливков|подсолнечн|уксус/i, "Olio e aceto"],
   [/вино|пиво|сок\b|сок |вода|воду|чай|кофе|лимонад|компот|квас|напиток/i, "Bevande"],
