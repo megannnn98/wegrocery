@@ -2224,6 +2224,7 @@ export const ru: Strings = {
     invalidDate: (field: string) => `${field}: недопустимая дата`,
     invalidPrice: "Недопустимая цена",
     csvEmpty: "Файл CSV пуст или содержит только заголовок.",
+    nonVegan: (names: string) => `В каталог можно добавлять только веганские продукты. Не разрешено: ${names}.`,
     csvInvalid: "В CSV не найдено подходящих продуктов.",
     csvReadError: "Не удаётся прочитать файл",
     xlsxReadError: "Ошибка чтения файла",

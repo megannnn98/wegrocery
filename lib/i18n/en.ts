@@ -2183,6 +2183,7 @@ export const en: Strings = {
     invalidDate: (field: string) => `${field}: invalid date`,
     invalidPrice: "Invalid price",
     csvEmpty: "The CSV file is empty or contains only the header.",
+    nonVegan: (names: string) => `The catalog accepts vegan products only. Not allowed: ${names}.`,
     csvInvalid: "No valid products found in the CSV.",
     csvReadError: "Unable to read file",
     xlsxReadError: "File read error",
